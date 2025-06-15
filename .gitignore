@@ -1,0 +1,56 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# C extensions
+*.so
+
+# Distribution / packaging
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# Virtual environments
+venv/
+ENV/
+env/
+.venv/
+
+# Pytest
+.cache/
+
+# Flask instance folder
+instance/
+
+# VSCode
+.vscode/
+
+# Mac
+.DS_Store
+
+# Database
+app/db/data.json
+
+# Logs
+*.log
+
+# Shell history
+.python_history
+
+# OS generated files
+Thumbs.db
+ehthumbs.db
+Icon?
