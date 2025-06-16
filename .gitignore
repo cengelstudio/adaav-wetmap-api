@@ -42,7 +42,8 @@ instance/
 .DS_Store
 
 # Database
-app/db/data.json
+app/db/users.json
+app/db/locations.json
 
 # Logs
 *.log

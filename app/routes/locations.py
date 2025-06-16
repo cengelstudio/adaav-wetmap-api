@@ -1,15 +1,14 @@
 from flask import Blueprint, request, jsonify
-from ..utils.db_handler import read_db, write_db
+from ..utils.db_handler import read_locations, write_locations
 from .token import token_required
 import datetime
 
-locations_bp = Blueprint('locations', __name__)
+locations_bp = Blueprint('locations', __name__, url_prefix='/api/locations')
 
-@locations_bp.route('/locations', methods=['GET'])
+@locations_bp.route('/', methods=['GET'])
 @token_required
 def get_locations(current_user):
-    db = read_db()
-    locations = db['locations']
+    locations = read_locations()
     loc_type = request.args.get('type')
     city = request.args.get('city')
     if loc_type:
@@ -18,11 +17,11 @@ def get_locations(current_user):
         locations = [l for l in locations if l['city'] == city]
     return jsonify(locations)
 
-@locations_bp.route('/locations', methods=['POST'])
+@locations_bp.route('/', methods=['POST'])
 @token_required
 def add_location(current_user):
     data = request.json
-    db = read_db()
+    locations = read_locations()
     new_loc = {
         'id': str(datetime.datetime.utcnow().timestamp()),
         'title': data['title'],
@@ -32,16 +31,16 @@ def add_location(current_user):
         'type': data['type'],
         'city': data['city']
     }
-    db['locations'].append(new_loc)
-    write_db(db)
+    locations.append(new_loc)
+    write_locations(locations)
     return jsonify(new_loc), 201
 
-@locations_bp.route('/locations/<loc_id>', methods=['PUT'])
+@locations_bp.route('/<loc_id>', methods=['PUT'])
 @token_required
 def update_location(current_user, loc_id):
     data = request.json
-    db = read_db()
-    for loc in db['locations']:
+    locations = read_locations()
+    for loc in locations:
         if loc['id'] == loc_id:
             loc.update({
                 'title': data.get('title', loc['title']),
@@ -51,17 +50,16 @@ def update_location(current_user, loc_id):
                 'type': data.get('type', loc['type']),
                 'city': data.get('city', loc['city'])
             })
-            write_db(db)
+            write_locations(locations)
             return jsonify(loc)
     return jsonify({'message': 'Konum bulunamadı!'}), 404
 
-@locations_bp.route('/locations/<loc_id>', methods=['DELETE'])
+@locations_bp.route('/<loc_id>', methods=['DELETE'])
 @token_required
 def delete_location(current_user, loc_id):
-    db = read_db()
-    new_locations = [l for l in db['locations'] if l['id'] != loc_id]
-    if len(new_locations) == len(db['locations']):
+    locations = read_locations()
+    new_locations = [l for l in locations if l['id'] != loc_id]
+    if len(new_locations) == len(locations):
         return jsonify({'message': 'Konum bulunamadı!'}), 404
-    db['locations'] = new_locations
-    write_db(db)
+    write_locations(new_locations)
     return jsonify({'message': 'Konum silindi.'})

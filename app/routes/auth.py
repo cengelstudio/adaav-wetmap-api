@@ -4,9 +4,9 @@ import datetime
 from ..utils.db_handler import read_db
 from .token import token_required
 
-auth_bp = Blueprint('auth', __name__)
+auth_bp = Blueprint('auth', __name__, url_prefix='/api/auth')
 
-@auth_bp.route('/auth/login', methods=['POST'])
+@auth_bp.route('/login', methods=['POST'])
 def login():
     data = request.json
     db = read_db()
@@ -16,7 +16,7 @@ def login():
     token = jwt.encode({'user': {'id': user['id'], 'name': user['name'], 'username': user['username']}, 'exp': datetime.datetime.utcnow() + datetime.timedelta(hours=12)}, app.config['SECRET_KEY'], algorithm="HS256")
     return jsonify({'token': token, 'user': {'id': user['id'], 'name': user['name'], 'username': user['username']}})
 
-@auth_bp.route('/auth/me', methods=['GET'])
+@auth_bp.route('/me', methods=['GET'])
 @token_required
 def me(current_user):
     return jsonify(current_user)
